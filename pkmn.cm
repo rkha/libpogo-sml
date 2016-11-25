@@ -9,7 +9,7 @@ Library
 
 	signature POGOBASESTATS
 	structure PoGoBaseStats20160706
-	structure PoGoBaseStats20161121
+	functor PoGoBaseStats20161121
 	structure PoGoBaseStats
 
 	signature POKEMONGO
