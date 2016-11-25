@@ -8,7 +8,17 @@ struct
 
 	exception PoGoBaseStats_Unimplemented;
 
+	(* Helper function that just swaps the order of the tuple around so the
+	 * larger value stays on the left because the new formula cares which
+	 * value is greater.
+	 *)
 	fun pairMaxMin (r1, r2) = if (Real.<(r1,r2)) then (r2,r1) else (r1,r2);
+	fun statScale (phys, spec) =
+	let
+		val (statHigh, statLow) = pairMaxMin (phys, spec)
+	in
+		Real.fromInt (Real.round (2.0 * ((7.0 * statHigh / 8.0) + (statLow / 8.0))))
+	end;
 
 	fun baseStatsToPoGo ((id, name, species, evos, (t1, t2), (hp, atk, def, spatk, spdef, spd)), (evoCost, captureRate, fleeRate)) =
 	let
@@ -16,9 +26,12 @@ struct
 			Real.fromInt atk, Real.fromInt def,
 			Real.fromInt spatk, Real.fromInt spdef, Real.fromInt spd
 		)
+
+		val speedMult = 1.0 + ((rSPD - 75.0) / 500.0)
+
 		val baseSta = 2 * hp
-		val baseAtk = 2 * (Real.round(Math.sqrt(rATK * rSPATK) + Math.sqrt(rSPD)))
-		val baseDef = 2 * (Real.round(Math.sqrt(rDEF * rSPDEF) + Math.sqrt(rSPD)))
+		val baseAtk = Real.round (statScale(rATK, rSPATK) * speedMult)
+		val baseDef = Real.round (statScale(rDEF, rSPDEF) * speedMult)
 	in
 		(id, name, evos, evoCost, species, (baseSta, baseAtk, baseDef), (t1, t2), captureRate, fleeRate)
 	end;
@@ -779,8 +792,57 @@ struct
 		(0, 0.0, 0.0),
 		(0, 0.0, 0.0),
 		(0, 0.0, 0.0),
-		(722, 0.0, 0.0),
-		(719, 0.0, 0.0)
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0),
+		(0, 0.0, 0.0)
 	];
 	val pkmnList = List.map (baseStatsToPoGo) (ListPair.zip (List.map (PkmnBaseStats.export) (PkmnBaseStats.getAllPokemon()), pogostatslist));
 	val dustList = [
