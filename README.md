@@ -3,7 +3,7 @@ I wrote a Pokemon: GO IV Calculator library in Standard ML.
 
 # Introduction
 Do you play Pokemon: GO?
-Do you find yourself wishing you had a library that wasn't written in some variant of JavaScript or VBscritp that you could work with when computing your Pokemon's IVs?
+Do you find yourself wishing you had a library that wasn't written in some variant of JavaScript or VBscript that you could work with when computing your Pokemon's IVs?
 Maybe other calculator apps don't tell you the specific piece of information you're looking for but you don't want to write your own library from scratch, or decipher another app's code / interface.
 Or maybe you just want to gain a deeper understanding of a Pokemon's stats so that you can manage them more optimally (with regards to some arbitrary metric of your choosing).
 
