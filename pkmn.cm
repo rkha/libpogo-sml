@@ -3,24 +3,36 @@ Library
 	structure PkmnType
 
 	signature PKMNBASESTATS
+	structure PkmnBaseStatsGen06
+	structure PkmnBaseStatsGen07
 	structure PkmnBaseStats
 
 	signature POGOBASESTATS
+	structure PoGoBaseStats20160706
+	structure PoGoBaseStats20161121
 	structure PoGoBaseStats
 
 	signature POKEMONGO
+	structure PokemonGo20160706
+	structure PokemonGo20161121
 	structure PokemonGo
 is
 	pkmntype.sig
 	pkmntype.sml
 
 	pkmnbasestats.sig
+	pkmnbasestatsgen06.sml
+	pkmnbasestatsgen07.sml
 	pkmnbasestats.sml
 
 	pogobasestats.sig
+	pogobasestats20160706.sml
+	pogobasestats20161121.sml
 	pogobasestats.sml
 
 	pkmn.sig
+	pkmn20160706.sml
+	pkmn20161121.sml
 	pkmn.sml
 
 	$/basis.cm
