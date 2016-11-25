@@ -17,23 +17,23 @@ Library
 	structure PokemonGo20161121
 	structure PokemonGo
 is
-	pkmntype.sig
-	pkmntype.sml
+	pkmntype/pkmntype.sig
+	pkmntype/pkmntype.sml
 
-	pkmnbasestats.sig
-	pkmnbasestatsgen06.sml
-	pkmnbasestatsgen07.sml
-	pkmnbasestats.sml
+	pkmnbasestats/pkmnbasestats.sig
+	pkmnbasestats/pkmnbasestats-gen06.sml
+	pkmnbasestats/pkmnbasestats-gen07.sml
+	pkmnbasestats/pkmnbasestats.sml
 
-	pogobasestats.sig
-	pogobasestats20160706.sml
-	pogobasestats20161121.sml
-	pogobasestats.sml
+	pogobasestats/pogobasestats.sig
+	pogobasestats/pogobasestats-20160706.sml
+	pogobasestats/pogobasestats-20161121.sml
+	pogobasestats/pogobasestats.sml
 
-	pkmn.sig
-	pkmn20160706.sml
-	pkmn20161121.sml
-	pkmn.sml
+	pokemongo/pokemongo.sig
+	pokemongo/pokemongo-20160706.sml
+	pokemongo/pokemongo-20161121.sml
+	pokemongo/pokemongo.sml
 
 	$/basis.cm
 	$/smlnj-lib.cm
