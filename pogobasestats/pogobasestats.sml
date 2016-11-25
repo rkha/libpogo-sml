@@ -1,1 +1,1 @@
-structure PoGoBaseStats :> POGOBASESTATS = PoGoBaseStats20161121;
+structure PoGoBaseStats :> POGOBASESTATS = PoGoBaseStats20161121 (PkmnBaseStats);
