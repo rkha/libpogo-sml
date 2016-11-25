@@ -99,6 +99,7 @@ Why not?
 
 ## Coming Less Soon:
 - Battle calculations
+- C and Python ports
 
 ## Coming Soon When Niantic Feels Like It
 - Gen II movesets
