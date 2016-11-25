@@ -1,4 +1,4 @@
-structure PoGoBaseStats20161121 :> POGOBASESTATS =
+functor PoGoBaseStats20161121 (PkmnBaseStats : PKMNBASESTATS) :> POGOBASESTATS =
 struct
 	type pkmnType = PkmnType.pkmnType;
 	(* The Pokemon type that contains all the base stats per Pokemon.
@@ -7,6 +7,8 @@ struct
 	type pkmn = int * string * int list * int * int * (int * int * int) * (pkmnType * pkmnType) * real * real;
 
 	exception PoGoBaseStats_Unimplemented;
+
+	fun pairMaxMin (r1, r2) = if (Real.<(r1,r2)) then (r2,r1) else (r1,r2);
 
 	fun baseStatsToPoGo ((id, name, species, evos, (t1, t2), (hp, atk, def, spatk, spdef, spd)), (evoCost, captureRate, fleeRate)) =
 	let
