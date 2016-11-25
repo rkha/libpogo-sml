@@ -28,6 +28,7 @@ And it's all available in one easy package. If it's in the game, it will eventua
 
 # Supported Standard ML Implementations:
 - SML/NJ
+
 Mainly because I use the ListPair structure. You could probably grab a copy for your own implementation and then fire it up.
 
 # How To Compile/Use
@@ -66,6 +67,7 @@ val it = [(23,NONE,(20,false),(15,13,13)),(23,NONE,(20,false),(15,14,11))]
 val it = (0.888888888889,0.911111111111) : real * real
 ```
 88.8% to 91.1%
+
 15 HP / 14 Att / 11 Def, or 15 HP / 13 Att / 13 Def
 
 ## Figure out how many Power Ups you need to figure out which IV combination it really is
@@ -74,6 +76,13 @@ val it = (0.888888888889,0.911111111111) : real * real
 val it = [(23,-),(23,-)] : (int * PokemonGo.pkmn) list
 ```
 Which means you need 23 Power Ups to figure it out. Holy toledo.
+
+# FAQ
+## Why?
+Because nobody had forward IV calculation (at least, when I started), future gens past II, and divergence.
+
+## No, I mean, like...WHY?
+Why not?
 
 # Coming Soon:
 - Version 2 Base Stats from Nov. 21, 2016 Update
