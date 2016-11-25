@@ -1,4 +1,4 @@
-structure PoGoBaseStats20160706 :> POGOBASESTATS =
+functor PoGoBaseStats20160706 (PkmnBaseStats : PKMNBASESTATS) :> POGOBASESTATS =
 struct
 	type pkmnType = PkmnType.pkmnType;
 	(* The Pokemon type that contains all the base stats per Pokemon.

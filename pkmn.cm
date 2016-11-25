@@ -8,7 +8,7 @@ Library
 	structure PkmnBaseStats
 
 	signature POGOBASESTATS
-	structure PoGoBaseStats20160706
+	functor PoGoBaseStats20160706
 	functor PoGoBaseStats20161121
 	structure PoGoBaseStats
 
