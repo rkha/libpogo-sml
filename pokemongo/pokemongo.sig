@@ -47,6 +47,7 @@ sig
 	 *)
 	val powerUp : pkmn -> pkmn
 	val powerUpN : int -> pkmn -> pkmn
+	val powerDown : pkmn -> pkmn
 	val setLevel : pkmn -> (int * bool) -> pkmn
 	val evolve : int -> pkmn -> pkmn
 
@@ -90,4 +91,6 @@ sig
 	(* Diverge function *)
 	val diverge : (pkmn * pkmn) -> int
 	val divergeL : pkmn list -> (int * pkmn) list
+	val getCost : (int * pkmn) -> {dust : int, candy : int}
+	val getDivergeCost : (int * pkmn) -> {dust : int, candy : int}
 end
