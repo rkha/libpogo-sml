@@ -24,7 +24,7 @@ And it's all available in one easy package. If it's in the game, it will eventua
 - Filter Pokemon based on some attributes like whether it was a wild Pokemon catch, egg, appraisal, etc.
 - Pokemon information lookup (name from ID, base stats, type information, etc.)
 - Populated type matrix because you can't remember if Steel vs Water is neutral or the other way around or if Bug resists Psychic.
-- Data for the first 721 Pokemon from Gen I to Gen VI
+- Data for the first 802 Pokemon from Gen I to Gen VII
 
 # Supported Standard ML Implementations:
 - SML/NJ
@@ -108,8 +108,8 @@ Why not?
 
 # Coming Soon:
 - ~~Version 2 Base Stats from Nov. 21, 2016 Update~~ (Done)
-- ~~How much more dust / candy needed to reach a level target~~ (Done)
-- Lookups by name instead of just ID
+- How much more dust / candy needed to reach a level target
+- ~~Lookups by name instead of just ID~~ (Done)
 - Catch probabilities
 - Catch bonuses
 - Flee rates
@@ -118,7 +118,6 @@ Why not?
 - More egg information
 - ~~Gen VII Base Stats (Sun & Moon)~~ (Done)
 - Alternate forms of existing Pokemon
-- Real documentation
 
 ## Coming Less Soon:
 - Battle calculations
