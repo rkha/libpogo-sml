@@ -1,1 +1,1 @@
-structure PkmnBaseStats :> PKMNBASESTATS = PkmnBaseStatsGen07;
+structure PkmnBaseStats :> PKMNBASESTATS = PkmnBaseStatsGen06;
