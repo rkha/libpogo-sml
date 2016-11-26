@@ -255,7 +255,6 @@ struct
 				| MAXLEVEL of int;
 
 	fun filterTrainer trainerLevel (_, _, (lv, half), _) = lv <= (trainerLevel+1);
-	fun filterEgg (_, _, (lv, half), _) = if (lv = 20) then (not(half)) else lv < 20;
 	fun filterWild (_, _, (lv, half), _) = if (lv = 30) then (not(half)) else ((not(half)) andalso (lv < 31));
 	fun filterIVsum ivrange (_, _, _, (attiv, defiv, hpiv)) =
 	let
@@ -290,6 +289,7 @@ struct
 	);
 	fun filterMinIV i (_, _, _, (staiv, attiv, defiv)) = (staiv >= i) andalso (attiv >= i) andalso (defiv >= i);
 	fun filterMaxLevel i (_, _, (level, half), _) = if (level = i) then half else (level < i);
+	fun filterEgg (mon as (_, _, (lv, half), _)) = (if (lv = 20) then (not(half)) else lv < 20) andalso (filterMinIV 10 mon);
 	fun filterHelper (APPRAISE(appraisal)) L = List.filter (appraise appraisal) L
 	|   filterHelper EGG L = List.filter (filterEgg) L
 	|   filterHelper WILD L = List.filter (filterWild) L
