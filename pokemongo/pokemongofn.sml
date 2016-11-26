@@ -112,6 +112,9 @@ struct
 	(* val getDefenseIV : pkmn -> int *)
 	fun getDefenseIV (_, _, _, (_, _, def)) = def;
 
+	fun isMaxLevel (_, _, (40, false), _) = true
+	|   isMaxLevel _ = false;
+
 	(* Pokemon modification functions.
 	 * Returns a new Pokemon with the modified stat.
 	 *)
@@ -123,7 +126,32 @@ struct
 	fun powerDown (_, _, (1, false), _) = raise PoGo_InvalidOperation "Attempting to power down below lv 1."
 	|   powerDown (id, nick, (level, false), ivs) = (id, nick, (level-1, true), ivs)
 	|   powerDown (id, nick, (level, true), ivs) = (id, nick, (level, false), ivs);
-
+	fun powerUpsToTrainerCap trainerLv (mon as (_, _, (level, half), _)) =
+	if ((half andalso (level = (trainerLv+1))) orelse (level > (trainerLv+1)))
+	then
+		0
+	else
+		1 + (powerUpsToTrainerCap trainerLv (powerUp mon));
+	fun powerUpToTrainerCap trainerLv (id, nick, (level, half), ivs) = (id, nick, (trainerLv+1, true), ivs);
+	fun powerUpToCP targetCP mon =
+	if ((getCP mon) > targetCP)
+	then
+		NONE
+	else if ((getCP mon) = targetCP)
+	then
+		SOME mon
+	else (powerUpToCP targetCP (powerUp mon));
+	fun powerUpsToCP targetCP mon =
+	if ((getCP mon) > targetCP)
+	then
+		NONE
+	else if ((getCP mon) = targetCP)
+	then
+		SOME 0
+	else (case (powerUpsToCP targetCP (powerUp mon)) of
+		NONE => NONE
+	|	SOME i => SOME (i+1)
+	);
 
 	(* val setLevel : pkmn -> (int * bool) -> pkmn *)
 	fun setLevel (id, nick, (_, _), ivs) (newLevel, newHalf) = (id, nick, (newLevel, newHalf), ivs);
@@ -252,7 +280,8 @@ struct
 				| BESTSTAT of bool * bool * bool
 				| MAXSTATRANGE of int
 				| MINIV of int
-				| MAXLEVEL of int;
+				| MAXLEVEL of int
+				| STARTER;
 
 	fun filterTrainer trainerLevel (_, _, (lv, half), _) = lv <= (trainerLevel+1);
 	fun filterWild (_, _, (lv, half), _) = if (lv = 30) then (not(half)) else ((not(half)) andalso (lv < 31));
@@ -290,6 +319,7 @@ struct
 	fun filterMinIV i (_, _, _, (staiv, attiv, defiv)) = (staiv >= i) andalso (attiv >= i) andalso (defiv >= i);
 	fun filterMaxLevel i (_, _, (level, half), _) = if (level = i) then half else (level < i);
 	fun filterEgg (mon as (_, _, (lv, half), _)) = (if (lv = 20) then (not(half)) else lv < 20) andalso (filterMinIV 10 mon);
+	fun filterStarter (_, _, _, ivs) = ivs = (10,10,10);
 	fun filterHelper (APPRAISE(appraisal)) L = List.filter (appraise appraisal) L
 	|   filterHelper EGG L = List.filter (filterEgg) L
 	|   filterHelper WILD L = List.filter (filterWild) L
@@ -298,7 +328,8 @@ struct
 	|   filterHelper (BESTSTAT(hp,att,def)) L = List.filter (filterBestStat (hp,att,def)) L
 	|   filterHelper (MAXSTATRANGE(i)) L = List.filter (filterMaxStatRange i) L
 	|   filterHelper (MINIV(i)) L = List.filter (filterMinIV i) L
-	|   filterHelper (MAXLEVEL(i)) L = List.filter (filterMaxLevel i) L;
+	|   filterHelper (MAXLEVEL(i)) L = List.filter (filterMaxLevel i) L
+	|   filterHelper STARTER L = List.filter (filterStarter) L;
 
 	fun filterPkmn [] L = L
 	|   filterPkmn (flag :: flags) L = filterPkmn flags (filterHelper flag L);
