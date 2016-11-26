@@ -33,4 +33,4 @@ val horseaDiverge = PokemonGo.divergeL horsea;
  *)
 val seadra = List.map (PokemonGo.evolve 117) horsea;
 val seadraDiverge = PokemonGo.divergeL seadra;
-val exportedSeadraDiverge = List.map (fn (x,y) => (x,PokemonGo.getIVs y)) it;
+val exportedSeadraDiverge = List.map (fn (x,y) => (x,PokemonGo.getIVs y)) seadraDiverge;
