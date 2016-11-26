@@ -48,6 +48,10 @@ sig
 	val powerUp : pkmn -> pkmn
 	val powerUpN : int -> pkmn -> pkmn
 	val powerDown : pkmn -> pkmn
+	val powerUpsToTrainerCap : int -> pkmn -> int
+	val powerUpToTrainerCap : int -> pkmn -> pkmn
+	val powerUpToCP : int -> pkmn -> pkmn option
+	val powerUpsToCP : int -> pkmn -> int option
 	val setLevel : pkmn -> (int * bool) -> pkmn
 	val evolve : int -> pkmn -> pkmn
 
@@ -92,7 +96,8 @@ sig
 				| BESTSTAT of bool * bool * bool
 				| MAXSTATRANGE of int
 				| MINIV of int
-				| MAXLEVEL of int;
+				| MAXLEVEL of int
+				| STARTER;
 	val filterPkmn : filterFlag list -> pkmn list -> pkmn list
 
 	(* Need a pkmn list intersect function *)
