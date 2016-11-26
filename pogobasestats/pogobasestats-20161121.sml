@@ -17,7 +17,7 @@ struct
 	let
 		val (statHigh, statLow) = pairMaxMin (phys, spec)
 	in
-		Real.fromInt (Real.round (2.0 * ((7.0 * statHigh / 8.0) + (statLow / 8.0))))
+		Real.realRound (2.0 * ((7.0 / 8.0 * statHigh) + (1.0 / 8.0 * statLow)))
 	end;
 
 	fun baseStatsToPoGo ((id, name, species, evos, (t1, t2), (hp, atk, def, spatk, spdef, spd)), (evoCost, captureRate, fleeRate)) =
