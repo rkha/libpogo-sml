@@ -9,21 +9,28 @@ val pidgeys = PokemonGo.reverseIV 16 (10,10,200);
  *)
 val wildPidgeys = PokemonGo.filterPkmn [PokemonGo.WILD] (PokemonGo.reverseIV 16 (10,10,200));
 
-(* Checking the IVs of an egg-hatched Ekans of 459 CP / 50 HP / 2500 Star Dust
+(* Checking the IVs of an egg-hatched Horsea of 93 CP / 19 HP / 400 Star Dust
  * that Spark describes as:
  * - "looks like it can really battle with the best of them"
  * - "Its best quality is its HP", and
  * - "Its stats are the best I've ever seen!"
  *)
-val ekans = PokemonGo.filterPkmn [PokemonGo.APPRAISE(4,4,(true,false,false)), PokemonGo.EGG] (PokemonGo.reverseIV 23 (459,50,2500));
+val horsea = PokemonGo.filterPkmn [PokemonGo.APPRAISE(4,4,(true,false,false)), PokemonGo.WILD] (PokemonGo.reverseIV 116 (93,19,400));
 
 (* Actually seeing its IVs or IV perfection percentage range
  * instead an opaque hyphen.
  *)
-val exportedEkans = List.map (PokemonGo.export) ekans;
-val ekansRange = PokemonGo.getIVPerfectionRange ekans;
+val exportedHorsea = List.map (PokemonGo.export) horsea;
+val horseaRange = PokemonGo.getIVPerfectionRange horsea;
 
 (* Figure out how many Power Ups you need to figure out which IV combination
  * it really is.
  *)
-val ekansDiverge = PokemonGo.divergeL ekans;
+val horseaDiverge = PokemonGo.divergeL horsea;
+
+(* Maybe if you evolve it to a Seadra first, you would need less Power Ups
+ * because you value Star Dust more than Horsea Candies.
+ *)
+val seadra = List.map (PokemonGo.evolve 117) horsea;
+val seadraDiverge = PokemonGo.divergeL seadra;
+val exportedSeadraDiverge = List.map (fn (x,y) => (x,PokemonGo.getIVs y)) it;
