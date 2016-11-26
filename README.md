@@ -24,7 +24,7 @@ And it's all available in one easy package. If it's in the game, it will eventua
 - Filter Pokemon based on some attributes like whether it was a wild Pokemon catch, egg, appraisal, etc.
 - Pokemon information lookup (name from ID, base stats, type information, etc.)
 - Populated type matrix because you can't remember if Steel vs Water is neutral or the other way around or if Bug resists Psychic.
-- Data for the first 721 Pokemon from Gen I to Gen VI
+- Data for the first 802 Pokemon from Gen I to Gen VII
 
 # Supported Standard ML Implementations:
 - SML/NJ
