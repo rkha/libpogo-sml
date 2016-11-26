@@ -109,7 +109,7 @@ Why not?
 # Coming Soon:
 - ~~Version 2 Base Stats from Nov. 21, 2016 Update~~ (Done)
 - ~~How much more dust / candy needed to reach a level target~~ (Done)
-- Lookups by name instead of just ID
+- ~~Lookups by name instead of just ID~~ (Done)
 - Catch probabilities
 - Catch bonuses
 - Flee rates
