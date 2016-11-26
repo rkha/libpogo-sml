@@ -20,21 +20,49 @@ struct
 		Real.realRound (2.0 * ((7.0 / 8.0 * statHigh) + (1.0 / 8.0 * statLow)))
 	end;
 
-	fun baseStatsToPoGo ((id, name, species, evos, (t1, t2), (hp, atk, def, spatk, spdef, spd)), (evoCost, captureRate, fleeRate)) =
-	let
-		val (rATK, rDEF, rSPATK, rSPDEF, rSPD) = (
-			Real.fromInt atk, Real.fromInt def,
-			Real.fromInt spatk, Real.fromInt spdef, Real.fromInt spd
-		)
+	(* One day, I'll figure out how to not need this minus the Lapras. *)
+	val exceptionList = [
+		(11, (100,45,94)),
+		(12, (120,167,151)),
+		(32, (92,105,76)),
+		(45, (150,202,170)),
+		(51, (70,167,147)),
+		(74, (80,132,163)),
+		(75, (110,164,196)),
+		(80, (190,177,194)),
+		(81, (50,165,128)),
+		(98, (60,181,156)),
+		(101, (120,173,179)),
+		(103, (190,233,158)),
+		(105, (120,144,200)),
+		(107, (100,193,212)),
+		(108, (180,108,137)),
+		(113, (500,60,176)),
+		(116, (60,129,125)),
+		(117, (110,187,182)),
+		(127, (130,238,197)),
+		(131, (260,186,190)),
+		(147, (82,119,94))
+	];
 
-		val speedMult = 1.0 + ((rSPD - 75.0) / 500.0)
+	fun baseStatsToPoGo ((id, name, species, evos, (t1, t2), (hp, atk, def, spatk, spdef, spd)), (evoCost, captureRate, fleeRate)) = (case (List.find (fn (exid,_) => id=exid) exceptionList) of
+		SOME(_, (baseSta, baseAtk, baseDef)) => (id, name, evos, evoCost, species, (baseSta, baseAtk, baseDef), (t1, t2), captureRate, fleeRate)
+	|	NONE =>
+		let
+			val (rATK, rDEF, rSPATK, rSPDEF, rSPD) = (
+				Real.fromInt atk, Real.fromInt def,
+				Real.fromInt spatk, Real.fromInt spdef, Real.fromInt spd
+			)
 
-		val baseSta = 2 * hp
-		val baseAtk = Real.round (statScale(rATK, rSPATK) * speedMult)
-		val baseDef = Real.round (statScale(rDEF, rSPDEF) * speedMult)
-	in
-		(id, name, evos, evoCost, species, (baseSta, baseAtk, baseDef), (t1, t2), captureRate, fleeRate)
-	end;
+			val speedMult = 1.0 + ((rSPD - 75.0) / 500.0)
+
+			val baseSta = 2 * hp
+			val baseAtk = Real.round (statScale(rATK, rSPATK) * speedMult)
+			val baseDef = Real.round (statScale(rDEF, rSPDEF) * speedMult)
+		in
+			(id, name, evos, evoCost, species, (baseSta, baseAtk, baseDef), (t1, t2), captureRate, fleeRate)
+		end
+	);
 
 	(* Where the non-mainline stats go.
 	 * Evolution candy cost * Capture rate * Flee rate
