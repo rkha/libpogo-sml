@@ -8,11 +8,14 @@ Library
 	structure PkmnBaseStats
 
 	signature POGOBASESTATS
-	functor PoGoBaseStats20160706
-	functor PoGoBaseStats20161121
+	functor PoGoBaseStatsFn20160706
+	functor PoGoBaseStatsFn20161121
+	structure PoGoBaseStats20160706
+	structure PoGoBaseStats20161121
 	structure PoGoBaseStats
 
 	signature POKEMONGO
+	functor PokemonGoFun
 	structure PokemonGo20160706
 	structure PokemonGo20161121
 	structure PokemonGo
@@ -31,8 +34,7 @@ is
 	pogobasestats/pogobasestats.sml
 
 	pokemongo/pokemongo.sig
-	pokemongo/pokemongo-20160706.sml
-	pokemongo/pokemongo-20161121.sml
+	pokemongo/pokemongofun.sml
 	pokemongo/pokemongo.sml
 
 	$/basis.cm

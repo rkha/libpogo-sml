@@ -1,4 +1,4 @@
-structure PokemonGo20160706 :> POKEMONGO =
+functor PokemonGoFun (PoGoBaseStats : POGOBASESTATS) :> POKEMONGO =
 struct
 	(* Type for a specific Pokemon instance *)
 	type pkmn = int * string option * (int * bool) * (int * int * int);
