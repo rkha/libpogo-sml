@@ -120,6 +120,10 @@ struct
 	|   powerUp (id, nick, (level, true), ivs) = (id, nick, (level+1, false), ivs);
 	fun powerUpN 0 mon = mon
 	|   powerUpN n mon = powerUpN (n-1) (powerUp mon);
+	fun powerDown (_, _, (1, false), _) = raise PoGo_InvalidOperation "Attempting to power down below lv 1."
+	|   powerDown (id, nick, (level, false), ivs) = (id, nick, (level-1, true), ivs)
+	|   powerDown (id, nick, (level, true), ivs) = (id, nick, (level, false), ivs);
+
 
 	(* val setLevel : pkmn -> (int * bool) -> pkmn *)
 	fun setLevel (id, nick, (_, _), ivs) (newLevel, newHalf) = (id, nick, (newLevel, newHalf), ivs);
@@ -309,4 +313,27 @@ struct
 	fun divergeL [] = []
 	|   divergeL [mon] = [(0,mon)]
 	|   divergeL L = treeToList (divergeHelper 0 L);
+
+	(* val getCost : (int * pkmn) -> {dust : int, candy : int} *)
+	fun getCost (0, mon) = {dust = 0, candy = 0}
+	|   getCost (powerUps, mon as (_, _, level, _)) = if (powerUps < 0) then {dust = 0, candy = 0}
+	else
+	let
+		val (currentDust, currentCandy) = PoGoBaseStats.getPowerUpCost level
+		val {dust=recdust, candy=reccandy} = getCost (powerUps-1, powerUp mon)
+	in
+		{dust = currentDust + recdust, candy = currentCandy + reccandy}
+	end;
+
+	(* val getCost : (int * pkmn) -> {dust : int, candy : int} *)
+	fun getDivergeCost (0, mon) = {dust = 0, candy = 0}
+	|   getDivergeCost (powerUps, mon) = if (powerUps < 0) then {dust = 0, candy = 0}
+	else
+	let
+		val downMon = powerDown mon
+		val (currentDust, currentCandy) = PoGoBaseStats.getPowerUpCost (getLevel downMon)
+		val {dust=recdust, candy=reccandy} = getDivergeCost (powerUps-1, downMon)
+	in
+		{dust = currentDust + recdust, candy = currentCandy + reccandy}
+	end;
 end
