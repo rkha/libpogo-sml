@@ -84,7 +84,15 @@ sig
 	(* Filter function.
 	 * Filters all Pokemon in a list depending on list of flags set.
 	 *)
-	datatype filterFlag = APPRAISE of int * int * (bool * bool * bool) | TRAINER of int | WILD | EGG | IVSUM of int
+	datatype filterFlag	= APPRAISE of int * int * (bool * bool * bool)
+				| TRAINER of int
+				| WILD
+				| EGG
+				| IVSUM of int
+				| BESTSTAT of bool * bool * bool
+				| MAXSTATRANGE of int
+				| MINIV of int
+				| MAXLEVEL of int;
 	val filterPkmn : filterFlag list -> pkmn list -> pkmn list
 
 	(* Need a pkmn list intersect function *)

@@ -226,6 +226,7 @@ struct
 				andalso (att orelse def orelse hp)
 
 			(* Checks whether the top stats are equal to each other or not *)
+			(* Also checks whether the top stat is actually the top stat *)
 			fun eqCheck true true true = (staiv = attiv) andalso (staiv = defiv)
 			|   eqCheck true true false = (staiv = attiv) andalso (not(staiv = defiv))
 			|   eqCheck true false true = (staiv = defiv) andalso (not(staiv = attiv))
@@ -235,7 +236,6 @@ struct
 			|   eqCheck false false true = (not(defiv = staiv)) andalso (not(defiv = staiv)) andalso (defiv > staiv) andalso (defiv > attiv)
 			|   eqCheck false false false = false (*raise PoGo_InvalidValue("Bad appraisal, no highest stat.")*)
 
-			(* Checks whether the top stat is actually the top stat *)
 		in
 			rangeCheck andalso bestCheck andalso (eqCheck hp att def)
 		end
@@ -244,7 +244,16 @@ struct
 	 * Filters all Pokemon in a list depending on list of flags set.
 	 *)
 	(* val filterPkmn : filterFlag list -> pkmn list -> pkmn list *)
-	datatype filterFlag = APPRAISE of int * int * (bool * bool * bool) | TRAINER of int | WILD | EGG | IVSUM of int
+	datatype filterFlag	= APPRAISE of int * int * (bool * bool * bool)
+				| TRAINER of int
+				| WILD
+				| EGG
+				| IVSUM of int
+				| BESTSTAT of bool * bool * bool
+				| MAXSTATRANGE of int
+				| MINIV of int
+				| MAXLEVEL of int;
+
 	fun filterTrainer trainerLevel (_, _, (lv, half), _) = lv <= (trainerLevel+1);
 	fun filterEgg (_, _, (lv, half), _) = if (lv = 20) then (not(half)) else lv < 20;
 	fun filterWild (_, _, (lv, half), _) = if (lv = 30) then (not(half)) else ((not(half)) andalso (lv < 31));
@@ -260,11 +269,37 @@ struct
 			|	_ => raise PoGo_InvalidValue("IV sum range mismatch.")
 		)
 	end;
+	(* Note to self: Clean this up and merge with apppraisal function *)
+	fun filterBestStat (true, true, true) (_, _, _, (staiv, attiv, defiv)) = (staiv = attiv) andalso (staiv = defiv)
+	|   filterBestStat (true, true, false) (_, _, _, (staiv, attiv, defiv)) = (staiv = attiv) andalso (not(staiv = defiv))
+	|   filterBestStat (true, false, true) (_, _, _, (staiv, attiv, defiv)) = (staiv = defiv) andalso (not(staiv = attiv))
+	|   filterBestStat (false, true, true) (_, _, _, (staiv, attiv, defiv)) = (attiv = defiv) andalso (not(staiv = attiv))
+	|   filterBestStat (true, false, false) (_, _, _, (staiv, attiv, defiv)) = (not(staiv = attiv)) andalso (not(staiv = defiv)) andalso (staiv > attiv) andalso (staiv > defiv)
+	|   filterBestStat (false, true, false) (_, _, _, (staiv, attiv, defiv)) = (not(attiv = staiv)) andalso (not(attiv = defiv)) andalso (attiv > staiv) andalso (attiv > defiv)
+	|   filterBestStat (false, false, true) (_, _, _, (staiv, attiv, defiv)) = (not(defiv = staiv)) andalso (not(defiv = staiv)) andalso (defiv > staiv) andalso (defiv > attiv)
+	|   filterBestStat (false, false, false) (_, _, _, (staiv, attiv, defiv)) = false (*raise PoGo_InvalidValue("Bad appraisal, no highest stat.")*);
+
+	fun max3 (a,b,c) = if (a > b) then (if (a > c) then a else c) else (if (b > c) then b else c);
+
+	fun filterMaxStatRange range (_, _, _, ivs) = (case range of
+		4 => (max3 ivs) = 15
+	|	3 => ((max3 ivs) = 13) orelse ((max3 ivs) = 14)
+	|	2 => ((max3 ivs) > 8) andalso ((max3 ivs) < 13)
+	|	1 => (max3 ivs) < 9
+	|	_ => false
+	);
+	fun filterMinIV i (_, _, _, (staiv, attiv, defiv)) = (staiv >= i) andalso (attiv >= i) andalso (defiv >= i);
+	fun filterMaxLevel i (_, _, (level, half), _) = if (level = i) then half else (level < i);
 	fun filterHelper (APPRAISE(appraisal)) L = List.filter (appraise appraisal) L
 	|   filterHelper EGG L = List.filter (filterEgg) L
 	|   filterHelper WILD L = List.filter (filterWild) L
 	|   filterHelper (TRAINER(lv)) L = List.filter (filterTrainer lv) L
-	|   filterHelper (IVSUM(i)) L = List.filter (filterIVsum i) L;
+	|   filterHelper (IVSUM(i)) L = List.filter (filterIVsum i) L
+	|   filterHelper (BESTSTAT(hp,att,def)) L = List.filter (filterBestStat (hp,att,def)) L
+	|   filterHelper (MAXSTATRANGE(i)) L = List.filter (filterMaxStatRange i) L
+	|   filterHelper (MINIV(i)) L = List.filter (filterMinIV i) L
+	|   filterHelper (MAXLEVEL(i)) L = List.filter (filterMaxLevel i) L;
+
 	fun filterPkmn [] L = L
 	|   filterPkmn (flag :: flags) L = filterPkmn flags (filterHelper flag L);
 
