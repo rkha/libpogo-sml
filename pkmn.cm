@@ -2,7 +2,12 @@ Library
 	signature PKMNTYPE
 	structure PkmnType
 
+	signature PKMNSTATS
+	structure PkmnStatsGen06
+	structure PkmnStatsGen07
+
 	signature PKMNBASESTATS
+	functor PkmnBaseStatsFn
 	structure PkmnBaseStatsGen06
 	structure PkmnBaseStatsGen07
 	structure PkmnBaseStats
@@ -15,7 +20,7 @@ Library
 	structure PoGoBaseStats
 
 	signature POKEMONGO
-	functor PokemonGoFun
+	functor PokemonGoFn
 	structure PokemonGo20160706
 	structure PokemonGo20161121
 	structure PokemonGo
@@ -23,9 +28,12 @@ is
 	pkmntype/pkmntype.sig
 	pkmntype/pkmntype.sml
 
+	pkmnbasestats/pkmnstats.sig
+	pkmnbasestats/pkmnstats-gen06.sml
+	pkmnbasestats/pkmnstats-gen07.sml
+
 	pkmnbasestats/pkmnbasestats.sig
-	pkmnbasestats/pkmnbasestats-gen06.sml
-	pkmnbasestats/pkmnbasestats-gen07.sml
+	pkmnbasestats/pkmnbasestatsfn.sml
 	pkmnbasestats/pkmnbasestats.sml
 
 	pogobasestats/pogobasestats.sig
@@ -34,7 +42,7 @@ is
 	pogobasestats/pogobasestats.sml
 
 	pokemongo/pokemongo.sig
-	pokemongo/pokemongofun.sml
+	pokemongo/pokemongofn.sml
 	pokemongo/pokemongo.sml
 
 	$/basis.cm
