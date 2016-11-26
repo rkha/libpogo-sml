@@ -68,6 +68,8 @@ sig
 	 *)
 	val reverseIV : int -> (int * int * int) -> pkmn list
 	val reverseIVs : int -> (int * int * int) list -> pkmn list
+	val reverseIVs2 : (int * (int * int * int)) list -> pkmn list
+	val reverseIVByName : string -> (int * int * int) -> pkmn list
 
 	(* Reverse CP calculator method
 	 * Takes in species ID and just the CP and tries to brute force all

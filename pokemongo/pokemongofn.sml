@@ -196,6 +196,12 @@ struct
 	fun reverseIVs id [] = []
 	|   reverseIVs id [(cp, hp, cost)] = reverseIV id (cp, hp, cost)
 	|   reverseIVs id ((cp, hp, cost) :: L) = slowIntersect (reverseIV id (cp, hp, cost), reverseIVs id L);
+	(* val reverseIVs2 : (int * (int * int * int)) list -> pkmn list *)
+	fun reverseIVs2 [] = []
+	|   reverseIVs2 [(id, (cp, hp, cost))] = reverseIV id (cp, hp, cost)
+	|   reverseIVs2 ((id, (cp, hp, cost)) :: L) = slowIntersect (reverseIV id (cp, hp, cost), reverseIVs2 L);
+	(* val reverseIVByName : string -> (int * int * int) -> pkmn list *)
+	fun reverseIVByName name (cp, hp, cost) = reverseIV (PkmnBaseStats.getIDByName name) (cp, hp, cost);
 
 	(* Reverse CP calculator method
 	 * Takes in species ID and just the CP and tries to brute force all
