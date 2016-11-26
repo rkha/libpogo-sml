@@ -254,7 +254,7 @@ struct
 		(247, "Pupitar", 246, [248], (PkmnType.ROCK, PkmnType.GROUND), (70,84,70,65,70,51)),
 		(248, "Tyranitar", 246, [], (PkmnType.ROCK, PkmnType.DARK), (100,134,110,95,100,61)),
 		(249, "Lugia", 249, [], (PkmnType.PSYCHIC, PkmnType.FLYING), (106,90,130,90,154,110)),
-		(250, "Ho", 250, [], (PkmnType.FIRE, PkmnType.FLYING), (106,130,90,110,154,90)),
+		(250, "Ho-oh", 250, [], (PkmnType.FIRE, PkmnType.FLYING), (106,130,90,110,154,90)),
 		(251, "Celebi", 251, [], (PkmnType.PSYCHIC, PkmnType.GRASS), (100,100,100,100,100,100)),
 		(252, "Treecko", 252, [253], (PkmnType.GRASS, PkmnType.NONE), (40,45,35,65,55,70)),
 		(253, "Grovyle", 252, [254], (PkmnType.GRASS, PkmnType.NONE), (50,65,45,85,65,95)),
