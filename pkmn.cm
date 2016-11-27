@@ -19,6 +19,9 @@ Library
 	structure PoGoBaseStats20161121
 	structure PoGoBaseStats
 
+	signature GYMPRESTIGE
+	structure GymPrestige
+
 	signature POKEMONGO
 	functor PokemonGoFn
 	structure PokemonGo20160706
@@ -40,6 +43,9 @@ is
 	pogobasestats/pogobasestats-20160706.sml
 	pogobasestats/pogobasestats-20161121.sml
 	pogobasestats/pogobasestats.sml
+
+	pokemongo/gymprestige.sig
+	pokemongo/gymprestige.sml
 
 	pokemongo/pokemongo.sig
 	pokemongo/pokemongofn.sml
