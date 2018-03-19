@@ -15,8 +15,10 @@ Library
 	signature POGOBASESTATS
 	functor PoGoBaseStatsFn20160706
 	functor PoGoBaseStatsFn20161121
+	functor PoGoBaseStatsFn20180319
 	structure PoGoBaseStats20160706
 	structure PoGoBaseStats20161121
+	structure PoGoBaseStats20180319
 	structure PoGoBaseStats
 
 	signature GYMPRESTIGE
@@ -42,6 +44,7 @@ is
 	pogobasestats/pogobasestats.sig
 	pogobasestats/pogobasestats-20160706.sml
 	pogobasestats/pogobasestats-20161121.sml
+	pogobasestats/pogobasestats-20180319.sml
 	pogobasestats/pogobasestats.sml
 
 	pokemongo/gymprestige.sig
