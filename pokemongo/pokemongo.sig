@@ -78,6 +78,9 @@ sig
 	 *)
 	val reverseCP : int -> int -> pkmn list
 	val reverseCPHP : int -> (int * int) -> pkmn list
+	val reverseCPByName : string -> int -> pkmn list
+	val reverseCPs : int -> int list -> pkmn list
+	val reverseCPsByName : string -> int list -> pkmn list
 
 	(* Appraisal function.
 	 * Given an appraisal from your team leader, it will evaluate a
@@ -99,7 +102,12 @@ sig
 				| MAXSTATRANGE of int
 				| MINIV of int
 				| MAXLEVEL of int
-				| STARTER;
+				| STARTER
+				| NOTHALF
+				| HALF
+				| WEATHER
+				| RAID
+				| WEATHERRAID;
 	val filterPkmn : filterFlag list -> pkmn list -> pkmn list
 
 	(* Need a pkmn list intersect function *)
@@ -107,5 +115,12 @@ sig
 	val diverge : (pkmn * pkmn) -> int
 	val divergeL : pkmn list -> (int * pkmn) list
 	val getCost : (int * pkmn) -> {dust : int, candy : int}
+	val getCostToMax : pkmn -> {dust : int, candy : int}
 	val getDivergeCost : (int * pkmn) -> {dust : int, candy : int}
+
+	val analyseByName : filterFlag list -> string -> (int * int * int) -> pkmn list
+	val analyseByNameL : filterFlag list -> string -> (int * int * int) list -> pkmn list
+	val analyseCPByName : filterFlag list -> string -> int -> pkmn list
+	val analyseCPsByName : filterFlag list -> string -> int list -> pkmn list
+	val analysePkmn : pkmn -> unit
 end

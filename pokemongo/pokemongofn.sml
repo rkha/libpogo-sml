@@ -127,12 +127,12 @@ struct
 	|   powerDown (id, nick, (level, false), ivs) = (id, nick, (level-1, true), ivs)
 	|   powerDown (id, nick, (level, true), ivs) = (id, nick, (level, false), ivs);
 	fun powerUpsToTrainerCap trainerLv (mon as (_, _, (level, half), _)) =
-	if ((half andalso (level = (trainerLv+1))) orelse (level > (trainerLv+1)))
+	if ((level = (PoGoBaseStats.maxLevel)) orelse (false andalso (level = (trainerLv+2))) orelse (level >= (trainerLv+2)))
 	then
 		0
 	else
 		1 + (powerUpsToTrainerCap trainerLv (powerUp mon));
-	fun powerUpToTrainerCap trainerLv (id, nick, (level, half), ivs) = (id, nick, (trainerLv+1, true), ivs);
+	fun powerUpToTrainerCap trainerLv (id, nick, (level, half), ivs) = (id, nick, (if ((trainerLv+2) > (PoGoBaseStats.maxLevel)) then (PoGoBaseStats.maxLevel) else (trainerLv+2), false), ivs);
 	fun powerUpToCP targetCP mon =
 	if ((getCP mon) > targetCP)
 	then
@@ -157,7 +157,15 @@ struct
 	fun setLevel (id, nick, (_, _), ivs) (newLevel, newHalf) = (id, nick, (newLevel, newHalf), ivs);
 	(* val evolve : pkmn -> pkmn *)
 	fun evolve evo (id, nick, (level, half), ivs) = (case (PoGoBaseStats.getEvos id) of
-		[] => raise PoGo_InvalidOperation ("Cannot evolve Pokemon of ID: " ^ (Int.toString id))
+		[] =>		raise PoGo_InvalidOperation ("Cannot evolve Pokemon of ID: " ^ (Int.toString id))
+	|	[evoID] =>	if (evo=evoID)
+				then
+					(evo, nick, (level, half), ivs)
+				else if (evo=0)
+				then
+					(evoID, nick, (level, half), ivs)
+				else
+					raise PoGo_InvalidOperation ("Cannot evolve Pokemon of ID: " ^ (Int.toString id) ^ " to " ^ (Int.toString evo))
 	|	evoList =>	if (not(evo=0) andalso (List.exists (fn x => x=evo) evoList))
 					then (evo, nick, (level, half), ivs)
 					else raise PoGo_InvalidOperation ("Evo ID is not a valid evo: " ^ (Int.toString evo))
@@ -227,6 +235,21 @@ struct
 		List.filter (fn x => (getCP x) = cp) allPossibleCombinations
 	end;
 	fun reverseCPHP id (cp, hp) = List.filter (fn x => (getHP x) = hp) (reverseCP id cp);
+	fun reverseCPByName monName cp =
+	let
+		val id = PkmnBaseStats.getIDByName monName
+	in
+		reverseCP id cp
+	end;
+	fun reverseCPs id [] = []
+	|   reverseCPs id [cp] = reverseCP id cp
+	|   reverseCPs id (cp1 :: cps) = slowIntersect (reverseCP id cp1, reverseCPs id cps);
+	fun reverseCPsByName monName cps =
+	let
+		val id = PkmnBaseStats.getIDByName monName
+	in
+		reverseCPs id cps
+	end;
 
 	(* Appraisal function.
 	 * Given an appraisal from your team leader, it will evaluate a
@@ -262,9 +285,9 @@ struct
 			(* Checks whether the top stats are equal to each other or not *)
 			(* Also checks whether the top stat is actually the top stat *)
 			fun eqCheck true true true = (staiv = attiv) andalso (staiv = defiv)
-			|   eqCheck true true false = (staiv = attiv) andalso (not(staiv = defiv))
-			|   eqCheck true false true = (staiv = defiv) andalso (not(staiv = attiv))
-			|   eqCheck false true true = (attiv = defiv) andalso (not(staiv = attiv))
+			|   eqCheck true true false = (staiv = attiv) andalso (not(staiv = defiv)) andalso (staiv > defiv)
+			|   eqCheck true false true = (staiv = defiv) andalso (not(staiv = attiv)) andalso (staiv > attiv)
+			|   eqCheck false true true = (attiv = defiv) andalso (not(staiv = attiv)) andalso (staiv < attiv)
 			|   eqCheck true false false = (not(staiv = attiv)) andalso (not(staiv = defiv)) andalso (staiv > attiv) andalso (staiv > defiv)
 			|   eqCheck false true false = (not(attiv = staiv)) andalso (not(attiv = defiv)) andalso (attiv > staiv) andalso (attiv > defiv)
 			|   eqCheck false false true = (not(defiv = staiv)) andalso (not(defiv = staiv)) andalso (defiv > staiv) andalso (defiv > attiv)
@@ -287,10 +310,17 @@ struct
 				| MAXSTATRANGE of int
 				| MINIV of int
 				| MAXLEVEL of int
-				| STARTER;
+				| STARTER
+				| NOTHALF
+				| HALF
+				| WEATHER
+				| RAID
+				| WEATHERRAID;
 
 	fun filterTrainer trainerLevel (_, _, (lv, half), _) = lv <= (trainerLevel+1);
-	fun filterWild (_, _, (lv, half), _) = if (lv = 30) then (not(half)) else ((not(half)) andalso (lv < 31));
+	fun filterWild (_, _, (lv, half), _) = ((not(half)) andalso (lv < 31));
+	fun filterNotHalf (_, _, (_, half), _) = not(half);
+	fun filterHalf (_, _, (_, half), _) = half;
 	fun filterIVsum ivrange (_, _, _, (attiv, defiv, hpiv)) =
 	let
 		val sumIV = attiv + defiv + hpiv
@@ -324,7 +354,11 @@ struct
 	);
 	fun filterMinIV i (_, _, _, (staiv, attiv, defiv)) = (staiv >= i) andalso (attiv >= i) andalso (defiv >= i);
 	fun filterMaxLevel i (_, _, (level, half), _) = if (level = i) then half else (level < i);
-	fun filterEgg (mon as (_, _, (lv, half), _)) = (if (lv = 20) then (not(half)) else lv < 20) andalso (filterMinIV 10 mon);
+	fun filterEgg (mon as (_, _, (lv, false), _)) = (filterMaxLevel 20 mon) andalso (filterMinIV 10 mon)
+	|   filterEgg _ = false;
+	fun filterWeather (mon as (_, _, (lv, half), _)) = (filterNotHalf mon) andalso (filterMinIV 3 mon) andalso (filterMaxLevel 35);
+	fun filterRaid mon = filterEgg mon;
+	fun filterWeatherRaid (mon as (_, _, (lv, half), _)) = (filterMaxLevel 25 mon) andalso (filterNotHalf mon) andalso (filterMinIV 10 mon);
 	fun filterStarter (_, _, _, ivs) = ivs = (10,10,10);
 	fun filterHelper (APPRAISE(appraisal)) L = List.filter (appraise appraisal) L
 	|   filterHelper EGG L = List.filter (filterEgg) L
@@ -335,7 +369,12 @@ struct
 	|   filterHelper (MAXSTATRANGE(i)) L = List.filter (filterMaxStatRange i) L
 	|   filterHelper (MINIV(i)) L = List.filter (filterMinIV i) L
 	|   filterHelper (MAXLEVEL(i)) L = List.filter (filterMaxLevel i) L
-	|   filterHelper STARTER L = List.filter (filterStarter) L;
+	|   filterHelper STARTER L = List.filter (filterStarter) L
+	|   filterHelper NOTHALF L = List.filter (filterNotHalf) L
+	|   filterHelper HALF L = List.filter (filterHalf) L
+	|   filterHelper WEATHER L = List.filter (filterWeather) L
+	|   filterHelper RAID L = List.filter (filterRaid) L
+	|   filterHelper WEATHERRAID L = List.filter (filterWeatherRaid) L;
 
 	fun filterPkmn [] L = L
 	|   filterPkmn (flag :: flags) L = filterPkmn flags (filterHelper flag L);
@@ -364,7 +403,7 @@ struct
 		|   groupingToTree powerUps [mon] = LEAF(powerUps, mon)
 		|   groupingToTree powerUps L = NODE(
 			powerUps,
-			([(divergeHelper (powerUps+1)) (List.map (powerUp) L)] handle PoGo_Converge(L) => (List.map (fn x => groupingToTree (~1) [x]) L))
+			([(divergeHelper (powerUps+1)) (List.map (powerUp) L)] handle PoGo_Converge(L) => (List.map (fn x => groupingToTree (~1) [powerDown x]) L))
 		)
 
 		fun divergeHelperHelper acc [] = acc
@@ -396,6 +435,12 @@ struct
 	in
 		{dust = currentDust + recdust, candy = currentCandy + reccandy}
 	end;
+	fun getCostToMax (mon as (_, _, (level, half), _)) =
+	let
+		val powerUpCount = powerUpsToTrainerCap 40 mon
+	in
+		getCost (powerUpCount, mon)
+	end;
 
 	(* val getCost : (int * pkmn) -> {dust : int, candy : int} *)
 	fun getDivergeCost (0, mon) = {dust = 0, candy = 0}
@@ -408,4 +453,99 @@ struct
 	in
 		{dust = currentDust + recdust, candy = currentCandy + reccandy}
 	end;
+
+	(* Note: Printing percentages, not straight reals. e.g. 0.5 = 50.00% *)
+	fun printPercent digits r = Real.fmt (StringCvt.FIX (SOME digits)) (r * 100.0);
+	fun printLevel (level, half) = Real.fmt (StringCvt.FIX (SOME 1)) ((Real.fromInt level) + (if (half) then 0.5 else 0.0));
+	fun printPkmn (id, nickname, level, (hpiv, atkiv, defiv)) =
+	let
+		val basePkmn = PkmnBaseStats.getNameByID id
+	in
+		(case nickname of
+			NONE => ("Level " ^ (printLevel level) ^ " " ^ basePkmn ^ " (#" ^ (Int.toString id) ^ ") - IVs: (" ^ (Int.toString hpiv) ^ "/" ^ (Int.toString atkiv) ^ "/" ^ (Int.toString defiv) ^ ")")
+		|	SOME(nick) => (nick ^ " - Level " ^ (printLevel level) ^ " " ^ basePkmn ^ " (#" ^ (Int.toString id) ^ ") - IVs: (" ^ (Int.toString hpiv) ^ "/" ^ (Int.toString atkiv) ^ "/" ^ (Int.toString defiv) ^ ")")
+		)
+	end
+	fun printDiverge (~1, mon) = ("Impossible to determine for: " ^ (printPkmn mon))
+	|   printDiverge (steps, mon) = (Int.toString steps) ^ " powerups for Pokemon " ^ (printPkmn mon) ^ " - CP: " ^ (Int.toString (getCP mon)) ^ ", HP: " ^ (Int.toString (getHP mon));
+
+	fun analyseHelper candidateList =
+	let
+		val divergenceList = ListMergeSort.sort (fn ((x,_), (y,_)) => (x < 0) orelse (x > y)) (divergeL candidateList)
+		val (ivRangeStart, ivRangeEnd) = getIVPerfectionRange candidateList
+	in
+		if ((List.length candidateList) = 0) then (print ("Reverseal error: No valid candidates found.\n"); [])
+		else
+		(print("The IV perfection range is: " ^ (printPercent 2 ivRangeStart) ^ "% to " ^ (printPercent 2 ivRangeEnd) ^ "%.\n");
+		print("Reversal candidates:\n");
+		List.map (fn x => print ((printPkmn x) ^ "\n")) candidateList;
+		print("Divergence results:\n");
+		List.map (fn x => print ((printDiverge x) ^ "\n")) divergenceList;
+		candidateList
+		)
+	end;
+	(* Need to clean up *)
+	fun analyseByName appraisalList monName (monStats as (hp, cp, dust)) =
+	let
+		val candidateList = filterPkmn appraisalList (reverseIVByName monName monStats)
+	in
+		analyseHelper candidateList
+	end;
+
+	fun analyseByNameL appraisalList monName monStats =
+	let
+		val monID = (PkmnBaseStats.getIDByName monName)
+		val candidateList = filterPkmn appraisalList (reverseIVs monID monStats)
+	in
+		analyseHelper candidateList
+	end;
+
+	fun analyseCPByName appraisalList monName cp =
+	let
+		val candidateList = filterPkmn appraisalList (reverseCPByName monName cp)
+	in
+		analyseHelper candidateList
+	end;
+
+	fun analyseCPsByName appraisalList monName cps =
+	let
+		val candidateList = filterPkmn appraisalList (reverseCPsByName monName cps)
+	in
+		analyseHelper candidateList
+	end;
+
+	fun analysePkmnEvoHelper (mon as (id, nick, lvl, ivs)) =
+	let
+		val evoList = PkmnBaseStats.getEvos (PkmnBaseStats.getPkmn id)
+		val finalEvoList = List.foldl (fn (x,z) => (PkmnBaseStats.getEvos (PkmnBaseStats.getPkmn x)) @ z) [] evoList
+		val ultimateEvoList = (case finalEvoList of
+			[] => evoList
+		|       _ => finalEvoList
+		);
+		val _ = List.map (fn (xid, (xcp, xhp)) => print("Final evolution: " ^ (PkmnBaseStats.getNameByID xid) ^ ", Max CP: " ^ (Int.toString xcp) ^ ", Max HP: " ^ (Int.toString xhp) ^"\n")) (List.map (fn x => (x, getCPHP (x, nick, lvl, ivs))) ultimateEvoList);
+	in
+		()
+	end;
+
+	fun analysePkmn (mon as (id, nick, (level, half), (staiv, atkiv, defiv))) =
+	let
+		val () = print("Pokemon ID: " ^ (Int.toString id) ^ ", Species: " ^ (PkmnBaseStats.getNameByID id) ^ "\n")
+		val () = (case nick of
+				NONE => ()
+			|	SOME(nickstr) => print("Nickname: " ^ nickstr ^ ", ")
+			)
+		val () = print("Level: " ^ (printLevel (level, half)) ^ "\n");
+		val (ivRangeStart, _) = getIVPerfectionRange [mon]
+		val () = print("IVs: " ^ (Int.toString staiv) ^ " STA / " ^ (Int.toString atkiv) ^ " ATK / " ^ (Int.toString defiv) ^ " DEF. " ^ (printPercent 2 ivRangeStart) ^ "% IV Perfection\n");
+
+		val {dust=maxDust, candy=maxCandy} = getCostToMax mon
+		val maxPowerUps = powerUpsToTrainerCap 40 mon
+		val maxMon = powerUpToTrainerCap 40 mon
+		val () = print("Cost to power up to max Level: " ^ (Int.toString maxDust) ^ " star dust, " ^ (Int.toString maxCandy) ^ " candy over " ^ (Int.toString maxPowerUps) ^ " power ups.\n");
+		val (maxCP, maxHP) = getCPHP maxMon
+		val () = print("Max CP: " ^ (Int.toString maxCP) ^ ", Max HP: " ^ (Int.toString maxHP) ^ "\n");
+		val () = analysePkmnEvoHelper maxMon
+	in
+		()
+	end
 end
