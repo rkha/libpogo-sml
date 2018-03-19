@@ -467,7 +467,13 @@ struct
 		)
 	end
 	fun printDiverge (~1, mon) = ("Impossible to determine for: " ^ (printPkmn mon))
-	|   printDiverge (steps, mon) = (Int.toString steps) ^ " powerups for Pokemon " ^ (printPkmn mon) ^ " - CP: " ^ (Int.toString (getCP mon)) ^ ", HP: " ^ (Int.toString (getHP mon));
+	fun printDiverge (0, mon) = (Int.toString 0) ^ " powerups to Pokemon: " ^ (printPkmn mon) ^ " - CP: " ^ (Int.toString (getCP mon)) ^ ", HP: " ^ (Int.toString (getHP mon))
+	|   printDiverge (steps, mon) =
+	let
+		val {dust=dustCost, candy=candyCost} = getDivergeCost (steps, mon)
+	in
+		(Int.toString steps) ^ " powerups to Pokemon: " ^ (printPkmn mon) ^ " - CP: " ^ (Int.toString (getCP mon)) ^ ", HP: " ^ (Int.toString (getHP mon) ^ ", Cost: " ^ (Int.toString dustCost) ^ " star dust and " ^ (Int.toString candyCost) ^ " candy")
+	end;
 
 	fun analyseHelper candidateList =
 	let
