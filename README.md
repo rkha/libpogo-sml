@@ -47,6 +47,13 @@ Mainly because I use the ListPair structure. You could probably grab a copy for 
 val it = [-,-,-,-,-,-,-,-,-,-,-,-,...] : PokemonGo.pkmn list
 ```
 
+or
+
+```sml
+- PokemonGo.reverseIVByName "Pidgey" (10,10,200);
+val it = [-,-,-,-,-,-,-,-,-,-,-,-,...] : PokemonGo.pkmn list
+```
+
 ## Checking the IVs of a 10 CP / 10 HP Pidgey that you're sure was a wild catch or is not at a half level
 ```sml
 - PokemonGo.filterPkmn [PokemonGo.WILD] (PokemonGo.reverseIV 16 (10,10,200));
@@ -99,6 +106,42 @@ val it =
   : (int * (int * int * int)) list
 ```
 The 91.1% cases require either 3 or 11 Power Ups, which isn't as bad anymore, if the Horsea/Seadra is truly 91.1%. If it's 84.4%, then you'll know after 7 Power Ups. The 15 or 23 Power Up cases only figure out which of the four 88.8% cases it is and that's a waste of Power Ups if you don't care about Pokemon under 90%.
+
+## (NEW) You can also just skip all that manual work with the following one-liner:
+```sml
+- val horsea = analyseByName [APPRAISE(4,4,(true,false,false)),WILD] "Horsea" (93,19,400);
+The IV perfection range is: 82.22% to 88.89%.
+Reversal candidates:
+Level 4.0 Horsea (#116) - IVs: (15/11/13)
+Level 4.0 Horsea (#116) - IVs: (15/11/14)
+Level 4.0 Horsea (#116) - IVs: (15/12/11)
+Level 4.0 Horsea (#116) - IVs: (15/12/12)
+Level 4.0 Horsea (#116) - IVs: (15/12/13)
+Level 4.0 Horsea (#116) - IVs: (15/13/9)
+Level 4.0 Horsea (#116) - IVs: (15/13/10)
+Level 4.0 Horsea (#116) - IVs: (15/13/11)
+Level 4.0 Horsea (#116) - IVs: (15/14/8)
+Level 4.0 Horsea (#116) - IVs: (15/14/9)
+Divergence results:
+10 powerups for Pokemon Level 9.0 Horsea (#116) - IVs: (15/12/13) - CP: 229, HP: 29
+12 powerups for Pokemon Level 10.0 Horsea (#116) - IVs: (15/14/8) - CP: 254, HP: 31
+12 powerups for Pokemon Level 10.0 Horsea (#116) - IVs: (15/13/11) - CP: 256, HP: 31
+12 powerups for Pokemon Level 10.0 Horsea (#116) - IVs: (15/14/9) - CP: 255, HP: 31
+16 powerups for Pokemon Level 12.0 Horsea (#116) - IVs: (15/13/9) - CP: 304, HP: 34
+24 powerups for Pokemon Level 16.0 Horsea (#116) - IVs: (15/13/10) - CP: 407, HP: 40
+33 powerups for Pokemon Level 20.5 Horsea (#116) - IVs: (15/11/13) - CP: 521, HP: 45
+33 powerups for Pokemon Level 20.5 Horsea (#116) - IVs: (15/12/11) - CP: 520, HP: 45
+49 powerups for Pokemon Level 28.5 Horsea (#116) - IVs: (15/11/14) - CP: 727, HP: 53
+49 powerups for Pokemon Level 28.5 Horsea (#116) - IVs: (15/12/12) - CP: 726, HP: 53
+val horsea = [-,-,-,-,-,-,-,-,-,-] : pkmn list
+```
+What this means is that if after 10 powerups, the Horsea's stats are 229 CP and 29 HP, then its IVs are definitely 15/12/13 STA/ATK/DEF.
+
+After 2 more powerups after that (aka. 12 total), if the stats are 254 CP and 31 HP, then its IVs are 15/14/8.
+
+And so on.
+
+This makes it easy to tell at a glance how much you will have to invest to figure out which of a Pokemon's multiple possible IV configurations it actually is, and also whether it is worth it. 49 powerups does not seem like it is worth it.
 
 # FAQ
 ## Why?
