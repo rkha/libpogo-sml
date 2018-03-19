@@ -34,6 +34,7 @@ Mainly because I use the ListPair structure. You could probably grab a copy for 
 # How To Compile/Use
 - Download zip file
 - Unzip somewhere
+- Open your favourite command-line shell
 - cd to libpogo-sml/
 - Launch SML/NJ
 - CM.make "pkmn.cm";
