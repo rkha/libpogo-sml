@@ -353,7 +353,7 @@ struct
 	|	_ => false
 	);
 	fun filterMinIV i (_, _, _, (staiv, attiv, defiv)) = (staiv >= i) andalso (attiv >= i) andalso (defiv >= i);
-	fun filterMaxLevel i (_, _, (level, half), _) = if (level = i) then half else (level < i);
+	fun filterMaxLevel i (_, _, (level, half), _) = if (level = i) then (not(half)) else (level < i);
 	fun filterEgg (mon as (_, _, (lv, false), _)) = (filterMaxLevel 20 mon) andalso (filterMinIV 10 mon)
 	|   filterEgg _ = false;
 	fun filterWeather (mon as (_, _, (lv, half), _)) = (filterNotHalf mon) andalso (filterMinIV 3 mon) andalso (filterMaxLevel 35 mon);
