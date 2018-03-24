@@ -475,51 +475,6 @@ struct
 		(Int.toString steps) ^ " powerups to Pokemon: " ^ (printPkmn mon) ^ " - CP: " ^ (Int.toString (getCP mon)) ^ ", HP: " ^ (Int.toString (getHP mon) ^ ", Cost: " ^ (Int.toString dustCost) ^ " star dust and " ^ (Int.toString candyCost) ^ " candy")
 	end;
 
-	fun analyseHelper candidateList =
-	let
-		val divergenceList = ListMergeSort.sort (fn ((x,_), (y,_)) => (x < 0) orelse (x > y)) (divergeL candidateList)
-		val (ivRangeStart, ivRangeEnd) = getIVPerfectionRange candidateList
-	in
-		if ((List.length candidateList) = 0) then (print ("Reverseal error: No valid candidates found.\n"); [])
-		else
-		(print("The IV perfection range is: " ^ (printPercent 2 ivRangeStart) ^ "% to " ^ (printPercent 2 ivRangeEnd) ^ "%.\n");
-		print("Reversal candidates:\n");
-		List.map (fn x => print ((printPkmn x) ^ "\n")) candidateList;
-		print("Divergence results:\n");
-		List.map (fn x => print ((printDiverge x) ^ "\n")) divergenceList;
-		candidateList
-		)
-	end;
-	(* Need to clean up *)
-	fun analyseByName appraisalList monName (monStats as (hp, cp, dust)) =
-	let
-		val candidateList = filterPkmn appraisalList (reverseIVByName monName monStats)
-	in
-		analyseHelper candidateList
-	end;
-
-	fun analyseByNameL appraisalList monName monStats =
-	let
-		val monID = (PkmnBaseStats.getIDByName monName)
-		val candidateList = filterPkmn appraisalList (reverseIVs monID monStats)
-	in
-		analyseHelper candidateList
-	end;
-
-	fun analyseCPByName appraisalList monName cp =
-	let
-		val candidateList = filterPkmn appraisalList (reverseCPByName monName cp)
-	in
-		analyseHelper candidateList
-	end;
-
-	fun analyseCPsByName appraisalList monName cps =
-	let
-		val candidateList = filterPkmn appraisalList (reverseCPsByName monName cps)
-	in
-		analyseHelper candidateList
-	end;
-
 	fun analysePkmnEvoHelper (mon as (id, nick, lvl, ivs)) =
 	let
 		val evoList = PkmnBaseStats.getEvos (PkmnBaseStats.getPkmn id)
@@ -554,4 +509,50 @@ struct
 	in
 		()
 	end
+
+	fun analyseHelper candidateList =
+	let
+		val divergenceList = ListMergeSort.sort (fn ((x,_), (y,_)) => (x < 0) orelse (x > y)) (divergeL candidateList)
+		val (ivRangeStart, ivRangeEnd) = getIVPerfectionRange candidateList
+	in
+		if ((List.length candidateList) = 0) then (print ("Reverseal error: No valid candidates found.\n"); [])
+		else
+		(print("The IV perfection range is: " ^ (printPercent 2 ivRangeStart) ^ "% to " ^ (printPercent 2 ivRangeEnd) ^ "%.\n");
+		print("Reversal candidates:\n");
+		List.map (fn x => print ((printPkmn x) ^ "\n")) candidateList;
+		print("Divergence results:\n");
+		List.map (fn x => print ((printDiverge x) ^ "\n")) divergenceList;
+		(if ((List.length candidateList) = 1) then (analysePkmn (hd candidateList)) else ());
+		candidateList
+		)
+	end;
+	(* Need to clean up *)
+	fun analyseByName appraisalList monName (monStats as (hp, cp, dust)) =
+	let
+		val candidateList = filterPkmn appraisalList (reverseIVByName monName monStats)
+	in
+		analyseHelper candidateList
+	end;
+
+	fun analyseByNameL appraisalList monName monStats =
+	let
+		val monID = (PkmnBaseStats.getIDByName monName)
+		val candidateList = filterPkmn appraisalList (reverseIVs monID monStats)
+	in
+		analyseHelper candidateList
+	end;
+
+	fun analyseCPByName appraisalList monName cp =
+	let
+		val candidateList = filterPkmn appraisalList (reverseCPByName monName cp)
+	in
+		analyseHelper candidateList
+	end;
+
+	fun analyseCPsByName appraisalList monName cps =
+	let
+		val candidateList = filterPkmn appraisalList (reverseCPsByName monName cps)
+	in
+		analyseHelper candidateList
+	end;
 end
