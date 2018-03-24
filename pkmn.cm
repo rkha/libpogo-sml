@@ -28,6 +28,7 @@ Library
 	functor PokemonGoFn
 	structure PokemonGo20160706
 	structure PokemonGo20161121
+	structure PokemonGo20180319
 	structure PokemonGo
 is
 	pkmntype/pkmntype.sig
