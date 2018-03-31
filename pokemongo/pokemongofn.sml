@@ -466,7 +466,17 @@ struct
 		|	SOME(nick) => (nick ^ " - Level " ^ (printLevel level) ^ " " ^ basePkmn ^ " (#" ^ (Int.toString id) ^ ") - IVs: (" ^ (Int.toString hpiv) ^ "/" ^ (Int.toString atkiv) ^ "/" ^ (Int.toString defiv) ^ ")")
 		)
 	end
-	fun printDiverge (~1, mon) = ("Impossible to determine for: " ^ (printPkmn mon))
+	fun printImpossiblePkmn (id, nickname, level, (hpiv, atkiv, defiv)) =
+	let
+		val basePkmn = PkmnBaseStats.getNameByID id
+	in
+		(case nickname of
+			NONE => (basePkmn ^ " (#" ^ (Int.toString id) ^ ") - IVs: (" ^ (Int.toString hpiv) ^ "/" ^ (Int.toString atkiv) ^ "/" ^ (Int.toString defiv) ^ ")")
+		|	SOME(nick) => (nick ^ " - " ^ basePkmn ^ " (#" ^ (Int.toString id) ^ ") - IVs: (" ^ (Int.toString hpiv) ^ "/" ^ (Int.toString atkiv) ^ "/" ^ (Int.toString defiv) ^ ")")
+		)
+	end;
+
+	fun printDiverge (~1, mon) = ("Impossible to determine for: " ^ (printImpossiblePkmn mon))
 	|   printDiverge (0, mon) = (Int.toString 0) ^ " powerups to Pokemon: " ^ (printPkmn mon) ^ " - CP: " ^ (Int.toString (getCP mon)) ^ ", HP: " ^ (Int.toString (getHP mon))
 	|   printDiverge (steps, mon) =
 	let
